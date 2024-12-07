@@ -123,17 +123,14 @@ with lib; let
 
       # Get all changed secrets for cleanup (intersection)
       ${jq} \
-        --null-input \
         --compact-output \
-        --argfile old "$oldGenFile" \
         ${
       if isActivation
       then ''
-        --argfile new "$newGenFile" \
-        '$old - $new | .[]' |
+        --slurp '.[0] - .[1] | .[]' "$oldGenFile" "$newGenFile" |
       ''
       else ''
-        '$old | .[]' |
+        '. | .[]' "$oldGenFile" |
       ''
     }
       # Replace $UID with $(id -u). Don't use eval
